@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>News Panel</title>
+<link rel="stylesheet" href="sidepanel.css">
+</head>
+<body>
+
+  <!-- Shared by every non-games user. config.js reads ?user=<key>,
+       then fills in the title and tabs from that user's topics. -->
+  <div class="panel" aria-label="News Panel">
+    <div class="panel-head">
+      <div class="panel-top">
+        <h1 class="panel-title"></h1>
+        <button id="userBtn" class="ghost-btn user-btn" title="Switch user (Ctrl/Cmd+Shift+L)">Switch user</button>
+      </div>
+      <nav class="panel-tabs" id="panelTabs"></nav>
+    </div>
+
+    <div class="panel-status" id="panelStatus"></div>
+
+    <ul class="panel-list" id="panelList">
+    </ul>
+
+    <div class="panel-foot">
+      <button id="refreshBtn" class="ghost-btn">Refresh</button>
+      <span class="updated" id="updatedAt"></span>
+    </div>
+  </div>
+
+  <script src="defaults.js"></script>
+  <script src="config.js"></script>
+  <script src="panel-core.js"></script>
+</body>
+</html>

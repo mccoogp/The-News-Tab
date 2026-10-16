@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Games Panel</title>
+<link rel="stylesheet" href="sidepanel.css">
+</head>
+<body data-user="games">
+
+  <div class="panel" aria-label="Games Panel">
+    <div class="panel-head">
+      <div class="panel-top">
+        <h1 class="panel-title">Games</h1>
+        <button id="userBtn" class="ghost-btn user-btn" title="Switch user (Ctrl/Cmd+Shift+L)">Switch user</button>
+      </div>
+      <nav class="panel-tabs" id="panelTabs">
+        <button class="tab active" data-category="favorites">Favorites</button>
+        <button class="tab" data-category="crosswords">Crosswords</button>
+      </nav>
+    </div>
+
+    <div class="panel-status" id="panelStatus"></div>
+
+    <ul class="panel-list" id="panelList">
+    </ul>
+
+    <div class="panel-foot">
+      <button id="resetBtn" class="ghost-btn" title="Bring back every game you've marked as played">Reset played</button>
+      <span class="updated" id="updatedAt"></span>
+    </div>
+  </div>
+
+  <script src="defaults.js"></script>
+  <script src="config.js"></script>
+  <script src="games-core.js"></script>
+</body>
+</html>

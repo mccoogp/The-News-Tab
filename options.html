@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The News Tab – Options</title>
+<link rel="stylesheet" href="sidepanel.css">
+<style>
+  body { height: auto; min-height: 100%; }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  h1 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; margin: 0; letter-spacing: .02em; }
+  h2 { font-family: var(--serif); font-weight: 400; font-size: 1.1rem; margin: 2rem 0 .2rem; }
+  .hint { color: var(--cream-dim); font-size: .82rem; margin: .3rem 0 1rem; }
+  .saved { font-size: .75rem; color: var(--amber); opacity: 0; transition: opacity .3s; margin-right: .6rem; }
+  .saved.on { opacity: 1; }
+
+  details { background: var(--ink-2); border: 1px solid #33475e; border-radius: 8px; margin-bottom: .6rem; }
+  details.topic { background: var(--ink); margin: .5rem 0 0; }
+  summary { display: flex; align-items: center; gap: .6rem; padding: .65rem .8rem; cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  summary .name { flex: 1; font-family: var(--serif); }
+  .count { font-size: .72rem; color: var(--cream-dim); }
+  .handle { cursor: grab; color: var(--cream-dim); user-select: none; padding: 0 .15rem; }
+  .body { padding: .1rem .9rem .9rem; }
+  .dragging { opacity: .35; }
+  .off > summary .name { opacity: .5; }
+
+  .sub { font-size: .7rem; color: var(--amber); text-transform: uppercase; letter-spacing: .06em; margin: .9rem 0 .35rem; }
+  .row { display: flex; gap: .4rem; margin-bottom: .35rem; align-items: center; }
+  input, select { flex: 1; min-width: 0; background: var(--ink); color: var(--cream); border: 1px solid #33475e;
+    border-radius: 6px; padding: .35rem .5rem; font: inherit; font-size: .8rem; }
+  details.topic input, details.topic select { background: var(--ink-2); }
+  input:focus, select:focus { outline: 1px solid var(--amber); }
+  input.w { flex: 0 0 4.5rem; }
+  .kw { flex: 1; font-size: .82rem; }
+  .x { color: #e5484d; padding: .2rem .55rem; flex: none; }
+  .add { margin-top: .5rem; }
+  .add .ghost-btn { flex: none; color: var(--amber); }
+  .switch { display: flex; align-items: center; gap: .3rem; font-size: .72rem; color: var(--cream-dim); }
+  .switch input { flex: none; }
+  .danger { color: #e5484d; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>Options</h1>
+      <div><span class="saved" id="saved">Saved</span><button id="resetAll" class="ghost-btn danger" data-act="reset">Reset to defaults</button></div>
+    </div>
+    <h2>Users</h2>
+    <div id="users"></div>
+
+    <h2>Add a user</h2>
+    <div class="row add">
+      <input id="newUser" placeholder="Name">
+      <button class="ghost-btn" data-act="adduser">Add user</button>
+    </div>
+
+    <h2>Export updates</h2>
+    <p class="hint">Downloads a zip with your updated users, feeds, keywords, and games (all saved into defaults.js). Use this to export your version to another device.</p>
+    <div class="row add">
+      <button class="ghost-btn" data-act="export">Export updates</button>
+    </div>
+  </div>
+
+  <script src="defaults.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>
