@@ -1,8 +1,10 @@
 const PLAYED_KEY = 'playedGames';
+const SEED_KEY = 'randomSeed';
 
 let state = { category: null };
 let played = new Set();
 let renderedDay = null;
+let randomSeed = { day: null, n: 0 };   // n = 0 is the day's default order; Randomize picks a new n
 
 function storageGet(keys) {
   return new Promise(resolve => chrome.storage.local.get(keys, resolve));
@@ -40,8 +42,8 @@ function mulberry32(seed) {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
-function dailyShuffle(list) {
-  const rand = mulberry32(hashString(dayKey()));
+function dailyShuffle(list, n = 0) {
+  const rand = mulberry32(hashString(dayKey() + ':' + n));
   const arr = list.slice();
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));
@@ -59,20 +61,17 @@ function getGames(category) {
 }
 
 function visibleGames(category) {
-  let list = getGames(category);
-  if (category === 'random') {
-    list = dailyShuffle(list);
-  }
-  list = list.filter(g => !played.has(g.name));
-  if (category === 'random') {
-    const n = (typeof RANDOM_PICKS_PER_DAY !== 'undefined' && RANDOM_PICKS_PER_DAY) || 0;
-    if (n > 0) list = list.slice(0, n);
-  }
-  return list;
+  // Random is just the Favorites in a shuffled order that changes every day.
+  let list = category === 'random'
+    ? dailyShuffle(getGames('favorites'), randomSeed.n)
+    : getGames(category);
+  return list.filter(g => !played.has(g.name));
 }
 
 
 function renderList() {
+  if (randomSeed.day !== dayKey()) randomSeed = { day: dayKey(), n: 0 };   // new day, new order
+
   const list = document.getElementById('panelList');
   list.innerHTML = '';
   const games = visibleGames(state.category);
@@ -81,7 +80,7 @@ function renderList() {
     const empty = document.createElement('div');
     empty.className = 'empty-note';
     empty.textContent = getGames(state.category).length === 0
-      ? 'No games here yet. Add some in games-data.js.'
+      ? 'No games here yet. Add some in the options page.'
       : 'All games played! Do some work or tap Reset played.';
     list.appendChild(empty);
   }
@@ -119,8 +118,14 @@ function renderList() {
   }
 
   renderedDay = dayKey();
-  document.getElementById('updatedAt').textContent =
-    state.category === 'random' ? 'New picks at midnight' : '';
+  const randomBtn = document.getElementById('randomBtn');
+  if (randomBtn) randomBtn.hidden = state.category !== 'random';
+}
+
+async function randomize() {
+  randomSeed = { day: dayKey(), n: 1 + Math.floor(Math.random() * 1e9) };
+  await storageSet({ [SEED_KEY]: randomSeed });
+  renderList();
 }
 
 async function markPlayed(name) {
@@ -171,6 +176,8 @@ async function init() {
   await CONFIG_READY;
   const stored = (await storageGet(PLAYED_KEY))[PLAYED_KEY];
   played = new Set(Array.isArray(stored) ? stored : []);
+  const savedSeed = (await storageGet(SEED_KEY))[SEED_KEY];
+  if (savedSeed && savedSeed.day === dayKey()) randomSeed = savedSeed;
 
   const activeBtn = document.querySelector('#panelTabs .tab.active');
   state.category = activeBtn?.dataset.category || getCategoryOrder()[0];
@@ -185,6 +192,7 @@ async function init() {
   });
 
   document.getElementById('resetBtn').addEventListener('click', resetPlayed);
+  document.getElementById('randomBtn')?.addEventListener('click', randomize);
   document.getElementById('userBtn')?.addEventListener('click', () => {
     chrome.runtime.sendMessage({ type: 'switch-user' }).catch(() => {});
   });

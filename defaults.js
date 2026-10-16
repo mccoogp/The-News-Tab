@@ -2,7 +2,7 @@
 const DEFS = [
   ['main',     'Headlines', [['breaking', 'Breaking'], ['politics', 'Politics'], ['news', 'All News'], ['ct', 'Connecticut']]],
   ['midterms', 'Midterms',  [['midterms', 'Midterms'], ['texas', 'Texas'], ['michigan', 'Michigan'], ['maine', 'Maine']]],
-  ['games',    'Games',     [['favorites', 'Favorites'], ['crosswords', 'Crosswords']]],
+  ['games',    'Games',     [['favorites', 'Favorites'], ['random', 'Random'], ['crosswords', 'Crosswords']]],
 ];
 
 // Extra topics

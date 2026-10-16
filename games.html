@@ -15,6 +15,7 @@
       </div>
       <nav class="panel-tabs" id="panelTabs">
         <button class="tab active" data-category="favorites">Favorites</button>
+        <button class="tab" data-category="random">Random</button>
         <button class="tab" data-category="crosswords">Crosswords</button>
       </nav>
     </div>
@@ -26,11 +27,15 @@
 
     <div class="panel-foot">
       <button id="resetBtn" class="ghost-btn" title="Bring back every game you've marked as played">Reset played</button>
-      <span class="updated" id="updatedAt"></span>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <span class="updated" id="updatedAt"></span>
+        <button id="randomBtn" class="ghost-btn" title="Shuffle the order again" hidden>Randomize</button>
+      </div>
     </div>
   </div>
 
   <script src="defaults.js"></script>
+  <script src="games-data.js"></script>
   <script src="config.js"></script>
   <script src="games-core.js"></script>
 </body>
