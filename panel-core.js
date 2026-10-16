@@ -243,9 +243,6 @@ async function init() {
   });
 
   document.getElementById('refreshBtn').addEventListener('click', () => refresh(true));
-  document.getElementById('userBtn')?.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'switch-user' }).catch(() => {});
-  });
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message?.type === 'cycle-category') {

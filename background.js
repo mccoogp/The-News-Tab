@@ -63,6 +63,16 @@ async function switchView({ openPanel }) {
   await chrome.storage.local.set({ currentView });
 }
 
+// Jump straight to a chosen user (from the dropdown).
+async function setView(key) {
+  await ready;
+  const views = await getViews();
+  if (!views.some(v => v.key === key)) return;
+  currentView = key;
+  await applyView();
+  await chrome.storage.local.set({ currentView });
+}
+
 // Saving options re-applies the view right away (e.g. hiding the current user).
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.config) applyView();
@@ -74,6 +84,9 @@ chrome.runtime.onStartup.addListener(() => { ready.then(applyView); });
 chrome.runtime.onMessage.addListener((message) => {
   if (message?.type === 'switch-user') {
     switchView({ openPanel: false });
+  }
+  if (message?.type === 'set-user') {
+    setView(message.key);
   }
 });
 

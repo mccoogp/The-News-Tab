@@ -118,6 +118,8 @@ function renderList() {
   }
 
   renderedDay = dayKey();
+  document.getElementById('updatedAt').textContent =
+    state.category === 'random' ? 'Reshuffles at midnight' : '';
   const randomBtn = document.getElementById('randomBtn');
   if (randomBtn) randomBtn.hidden = state.category !== 'random';
 }
@@ -193,9 +195,6 @@ async function init() {
 
   document.getElementById('resetBtn').addEventListener('click', resetPlayed);
   document.getElementById('randomBtn')?.addEventListener('click', randomize);
-  document.getElementById('userBtn')?.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'switch-user' }).catch(() => {});
-  });
 
   chrome.runtime.onMessage.addListener((message) => {
     if (message?.type === 'cycle-category') cycleCategory();

@@ -1,3 +1,46 @@
+// The Switch user button opens a menu of every visible user.
+function setupUserMenu(config, currentKey) {
+  const btn = document.getElementById('userBtn');
+  if (!btn) return;
+  const keys = (config.userOrder || []).filter(k => config.users?.[k] && config.users[k].visible !== false);
+
+  const wrap = document.createElement('div');
+  wrap.className = 'user-menu-wrap';
+  btn.parentNode.insertBefore(wrap, btn);
+
+  const menu = document.createElement('div');
+  menu.className = 'user-menu';
+  menu.hidden = true;
+  menu.setAttribute('role', 'menu');
+
+  const close = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+
+  for (const k of keys) {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'user-menu-item' + (k === currentKey ? ' current' : '');
+    item.setAttribute('role', 'menuitem');
+    item.textContent = config.users[k].name;
+    item.addEventListener('click', () => {
+      close();
+      if (k !== currentKey) chrome.runtime.sendMessage({ type: 'set-user', key: k }).catch(() => {});
+    });
+    menu.appendChild(item);
+  }
+
+  wrap.append(btn, menu);
+  btn.setAttribute('aria-haspopup', 'menu');
+  btn.setAttribute('aria-expanded', 'false');
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', close);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+}
+
 const CONFIG_READY = (async () => {
   const { config: stored } = await chrome.storage.local.get('config');
   const config = stored || buildDefaults();
@@ -11,6 +54,7 @@ const CONFIG_READY = (async () => {
   }
 
   const key = new URLSearchParams(location.search).get('user') || document.body.dataset.user || 'main';
+  setupUserMenu(config, key);
   const u = config.users?.[key];
   const nav = document.getElementById('panelTabs');
   if (!u || !nav) return;
