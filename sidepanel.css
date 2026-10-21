@@ -155,10 +155,13 @@ body {
   font-size: 0.72rem;
   white-space: nowrap;
 }
-.user-btn::after {
-  content: '\25BE';          /* down arrow */
-  margin-left: 0.4rem;
+.user-arrow {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0 0.1rem 0.5rem;
+  border-left: 1px solid var(--ink-2);   /* divides "next user" from "pick a user" */
 }
+.user-btn:hover .user-arrow { border-left-color: var(--cream-dim); }
+.user-arrow:hover { color: var(--amber); }
 
 /* Switch-user dropdown */
 .user-menu-wrap { position: relative; }

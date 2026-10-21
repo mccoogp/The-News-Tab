@@ -1,7 +1,14 @@
-// The Switch user button opens a menu of every visible user.
+// The Switch user button jumps to the next user; its right-hand arrow opens a menu of every visible user.
 function setupUserMenu(config, currentKey) {
   const btn = document.getElementById('userBtn');
   if (!btn) return;
+  const arrow = document.createElement('span');
+  arrow.className = 'user-arrow';
+  arrow.setAttribute('aria-hidden', 'true');
+  arrow.textContent = '\u25BE';
+  btn.appendChild(arrow);
+  btn.title = 'Next user (Ctrl/Cmd+Shift+L). Click the arrow to pick a user.';
+
   const keys = (config.userOrder || []).filter(k => config.users?.[k] && config.users[k].visible !== false);
 
   const wrap = document.createElement('div');
@@ -33,13 +40,22 @@ function setupUserMenu(config, currentKey) {
   btn.setAttribute('aria-expanded', 'false');
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const open = menu.hidden;
-    menu.hidden = !open;
-    btn.setAttribute('aria-expanded', String(open));
+    // Arrow side -> dropdown. Anywhere else on the button -> next user.
+    if (e.clientX >= arrow.getBoundingClientRect().left - 4) {
+      const open = menu.hidden;
+      menu.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    } else {
+      close();
+      chrome.runtime.sendMessage({ type: 'switch-user' }).catch(() => {});
+    }
   });
   document.addEventListener('click', close);
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
 }
+
+// Edit button (bottom right) opens the options page.
+document.getElementById('editBtn')?.addEventListener('click', () => chrome.runtime.openOptionsPage());
 
 const CONFIG_READY = (async () => {
   const { config: stored } = await chrome.storage.local.get('config');

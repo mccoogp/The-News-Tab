@@ -60,12 +60,19 @@ function getGames(category) {
   return list.filter(g => g && g.name && !seen.has(g.name) && seen.add(g.name));
 }
 
+// Everything that can show up in a tab, before "played" games are removed.
+function allGames(category) {
+  if (category !== 'random') return getGames(category);
+  // Random = Favorites + anything added to the Random topic, shuffled together.
+  // Games added to Random never appear on the Favorites tab.
+  const seen = new Set();
+  const merged = getGames('favorites').concat(getGames('random'))
+    .filter(g => !seen.has(g.name) && seen.add(g.name));
+  return dailyShuffle(merged, randomSeed.n);
+}
+
 function visibleGames(category) {
-  // Random is just the Favorites in a shuffled order that changes every day.
-  let list = category === 'random'
-    ? dailyShuffle(getGames('favorites'), randomSeed.n)
-    : getGames(category);
-  return list.filter(g => !played.has(g.name));
+  return allGames(category).filter(g => !played.has(g.name));
 }
 
 
@@ -79,7 +86,7 @@ function renderList() {
   if (games.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'empty-note';
-    empty.textContent = getGames(state.category).length === 0
+    empty.textContent = allGames(state.category).length === 0
       ? 'No games here yet. Add some in the options page.'
       : 'All games played! Do some work or tap Reset played.';
     list.appendChild(empty);
@@ -118,10 +125,11 @@ function renderList() {
   }
 
   renderedDay = dayKey();
-  document.getElementById('updatedAt').textContent =
-    state.category === 'random' ? 'Reshuffles at midnight' : '';
+  document.getElementById('updatedAt').textContent = '';
   const randomBtn = document.getElementById('randomBtn');
   if (randomBtn) randomBtn.hidden = state.category !== 'random';
+  const editBtn = document.getElementById('editBtn');
+  if (editBtn) editBtn.hidden = state.category === 'random';
 }
 
 async function randomize() {
