@@ -252,9 +252,11 @@ function topicHTML(userKey, id) {
   if (!t) return '';
   let body;
   if (t.type === 'games') {
-    body = `<div class="sub">Games</div>` + t.games.map((g, i) =>
-      `<div class="row">${inp(id, 'games', i, 'name', g.name)}${inp(id, 'games', i, 'url', g.url)}${del(id, 'games', i)}</div>
-       <div class="row">${inp(id, 'games', i, 'desc', g.desc)}</div>`).join('') +
+    body = `<div class="sub">Games</div><div class="games-list" data-t="${id}">` + t.games.map((g, i) =>
+      `<div class="game" data-id="${i}">
+         <div class="row"><span class="handle" title="Drag to reorder">⠿</span>${inp(id, 'games', i, 'name', g.name)}${inp(id, 'games', i, 'url', g.url)}${del(id, 'games', i)}</div>
+         <div class="row"><span class="handle spacer"></span>${inp(id, 'games', i, 'desc', g.desc)}</div>
+       </div>`).join('') + `</div>` +
       `<div class="row add">${addIn('Name')}${addIn('Description')}${addIn('URL')}
        <button class="ghost-btn" data-act="addgame" data-t="${id}">Add</button></div>`;
   } else {
@@ -315,6 +317,12 @@ function render() {
   sortable($('#users'), ids => { cfg.userOrder = ids; save(); });
   document.querySelectorAll('.topics').forEach(l =>
     sortable(l, ids => { cfg.users[l.dataset.user].topics = ids; save(); }));
+  document.querySelectorAll('.games-list').forEach(l =>
+    sortable(l, ids => {
+      const t = cfg.topics[l.dataset.t];
+      t.games = ids.map(i => t.games[+i]);
+      save(); render();   // re-render so row indexes match the new order
+    }));
 }
 
 // ---------- Events ----------
